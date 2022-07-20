@@ -1,0 +1,19 @@
+---
+- name: Include Vaulted Variables
+  include_vars: vault.yml
+  tags:
+    - always
+
+- name: Deploy Tier 0 to RHEL7 Hosts
+  import_tasks: rhel7.yml
+  when: ansible_distribution_major_version == "7"
+  tags:
+    - never
+    - rhel7
+
+- name: Deploy Tier 0 to RHEL8 Hosts
+  import_tasks: rhel8.yml
+  when: ansible_distribution_major_version == "8"
+  tags:
+    - never
+    - rhel8

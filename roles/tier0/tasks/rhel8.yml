@@ -1,0 +1,93 @@
+---
+# - name: "Red Hat 8 | Install Repo files"
+#   copy:
+#     src: "{{ item }}"
+#     dest: /etc/yum.repos.d/
+#   loop:
+#     - epel8.repo
+#     - rhel8_appstream.repo
+#     - rhel8_baseos.repo
+#     - rhel8_crb.repo
+#     - vscode.repo
+
+- name: "Red Hat 8 | Install Required DNF Package Dependencies"
+  dnf:
+    name:
+      - ansible-core
+      - code
+      - git
+      - nfs-utils
+      - python38
+      - python38-pip
+      - vim
+      - yum-utils
+    state: present
+
+- name: "Red Hat 8 | Copy Python3.8 PIP Packages to Remote Host"
+  copy:
+    src: python38
+    dest: /tmp/
+    owner: root
+    group: root
+
+- name: "Red Hat 8 | Update Python3.8 PIP Dependencies"
+  pip:
+    name:
+      - "/tmp/python38/setuptools-63.2.0-py3-none-any.whl"
+      - "/tmp/python38/pip-22.1.2-py3-none-any.whl"
+      - "/tmp/python38/wheel-0.37.1-py2.py3-none-any.whl"
+    executable: pip3.8
+    state: present
+
+- name: "Red Hat 8 | Install Python3.8 PIP Packages"
+  pip:
+    name:
+      - "/tmp/python38/certifi-2022.6.15-py3-none-any.whl"
+      - "/tmp/python38/charset_normalizer-2.1.0-py3-none-any.whl"
+      - "/tmp/python38/idna-3.3-py3-none-any.whl"
+      - "/tmp/python38/ptyprocess-0.7.0-py2.py3-none-any.whl"
+      - "/tmp/python38/pexpect-4.8.0-py2.py3-none-any.whl"
+      - "/tmp/python38/urllib3-1.26.10-py2.py3-none-any.whl"
+      - "/tmp/python38/requests-2.28.1-py3-none-any.whl"
+      - "/tmp/python38/six-1.16.0-py2.py3-none-any.whl"
+      - "/tmp/python38/pyvmomi-7.0.3.tar.gz"
+    executable: pip3.8
+    state: present
+
+- name: "Red Hat 8 | Create Ansible Collection Directories"
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  loop:
+    - /usr/share/ansible/collections/ansible_collections/ansible
+    - /usr/share/ansible/collections/ansible_collections/ansible/posix
+    - /usr/share/ansible/collections/ansible_collections/ansible/utils
+    - /usr/share/ansible/collections/ansible_collections/community
+    - /usr/share/ansible/collections/ansible_collections/community/general
+    - /usr/share/ansible/collections/ansible_collections/community/hashi_vault
+    - /usr/share/ansible/collections/ansible_collections/community/sops
+    - /usr/share/ansible/collections/ansible_collections/community/vmware
+    - /usr/share/ansible/collections/ansible_collections/kubernetes/core
+
+- name: "Red Hat 8 | Install Ansible Collections"
+  unarchive:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+  loop:
+    - { src: ansible-posix-1.4.0.tar.gz, dest: /usr/share/ansible/collections/ansible_collections/ansible/posix/ }
+    - { src: ansible-utils-2.6.1.tar.gz, dest: /usr/share/ansible/collections/ansible_collections/ansible/utils/ }
+    - { src: community-general-5.3.0.tar.gz, dest: /usr/share/ansible/collections/ansible_collections/community/general/ }
+    - { src: community-hashi_vault-3.1.0.tar.gz, dest: /usr/share/ansible/collections/ansible_collections/community/hashi_vault/ }
+    - { src: community-sops-1.2.3.tar.gz, dest: /usr/share/ansible/collections/ansible_collections/community/sops/ }
+    - { src: community-vmware-2.7.0.tar.gz, dest: /usr/share/ansible/collections/ansible_collections/community/vmware/ }
+    - { src: kubernetes-core-2.3.2.tar.gz, dest: /usr/share/ansible/collections/ansible_collections/kubernetes/core/ }
+
+- name: "Red Hat 8 | Remove Python3.8 PIP Temp Folder"
+  file:
+    path: python38
+    state: absent

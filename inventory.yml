@@ -1,0 +1,15 @@
+---
+infrastructure:
+  children:
+    redhat:
+      children:
+        workstations:
+          hosts:
+            adm01:
+              ansible_host: 10.10.10.118
+              ansible_user: zimmermanc
+              ansible_python_interpreter: /usr/bin/python2
+            adm02:
+              ansible_host: 10.10.10.110
+              ansible_user: zimmermanc
+              ansible_python_interpreter: /usr/bin/python3
