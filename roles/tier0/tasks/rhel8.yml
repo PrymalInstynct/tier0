@@ -20,6 +20,7 @@
       - python38
       - python38-pip
       - python38-jmespath
+      - rsync
       - vim
       - yum-utils
     state: present

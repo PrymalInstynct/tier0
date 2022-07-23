@@ -19,6 +19,7 @@
       - nfs-utils
       - python2
       - python2-pip
+      - rsync
       - vim
       - yum-utils
     state: present
